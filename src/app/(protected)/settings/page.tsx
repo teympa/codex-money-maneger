@@ -1,6 +1,7 @@
 import { LineNotificationSettingsForm } from "@/components/settings/line-notification-settings-form";
 import { ClassificationRulesManager } from "@/components/settings/classification-rules-manager";
 import { CategoriesManager } from "@/components/settings/categories-manager";
+import { ProductionReadinessCard } from "@/components/settings/production-readiness-card";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -27,15 +28,17 @@ export default async function SettingsPage() {
     <div className="space-y-6">
       <PageHeader
         title="設定"
-        description="通知、カテゴリ、自動分類ルールなど、毎日の運用に関わる設定をまとめています。"
+        description="通知、カテゴリ、自動分類ルール、本番運用まわりの設定をまとめています。"
       />
+
+      <ProductionReadinessCard />
 
       <Card className="space-y-5">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-ink">LINE通知と日次レポート</h2>
             <p className="mt-1 text-sm text-slate-500">
-              通知のON/OFF、日次レポートの時刻、LINEユーザーIDをここで管理します。
+              通知の ON/OFF、送信時刻、LINE ユーザーID をここで管理します。
             </p>
           </div>
           <StatusBadge tone={notification.line_notifications_enabled ? "success" : "info"}>
@@ -83,7 +86,7 @@ export default async function SettingsPage() {
         <div>
           <h2 className="text-lg font-semibold text-ink">カテゴリ設定</h2>
           <p className="mt-1 text-sm text-slate-500">
-            表示順や色、カテゴリ種別をここで見直せます。不要なカテゴリの編集や削除もここから行えます。
+            表示順や色、カテゴリ種別をここで見直せます。
           </p>
         </div>
 

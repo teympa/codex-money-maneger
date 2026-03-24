@@ -51,6 +51,7 @@ const ensureDemoUserId = cache(async function ensureDemoUserId() {
 
   let existingUser = usersData.users.find((user) => user.email === mockProfile.email);
   let userId = existingUser?.id;
+  let createdDemoUser = false;
 
   if (!userId) {
     const { data: createdUserData, error: createUserError } = await admin.auth.admin.createUser({
@@ -78,6 +79,7 @@ const ensureDemoUserId = cache(async function ensureDemoUserId() {
       userId = existingUser?.id;
     } else {
       userId = createdUserData.user?.id;
+      createdDemoUser = true;
     }
   }
 
@@ -112,7 +114,7 @@ const ensureDemoUserId = cache(async function ensureDemoUserId() {
   if (notificationError) throw notificationError;
 
   const { data: existingAccounts } = await admin.from("accounts").select("id").eq("user_id", userId);
-  if ((existingAccounts ?? []).length === 0) {
+  if (createdDemoUser && (existingAccounts ?? []).length === 0) {
     const accountsToInsert = mockAccounts.map(
       ({ id: _id, user_id: _userId, created_at: _createdAt, updated_at: _updatedAt, ...account }) => ({
         ...account,
@@ -125,7 +127,7 @@ const ensureDemoUserId = cache(async function ensureDemoUserId() {
   }
 
   const { data: existingCategories } = await admin.from("categories").select("id").eq("user_id", userId);
-  if ((existingCategories ?? []).length === 0) {
+  if (createdDemoUser && (existingCategories ?? []).length === 0) {
     const categoriesToInsert = mockCategories.map(
       ({ id: _id, user_id: _userId, created_at: _createdAt, updated_at: _updatedAt, ...category }) => ({
         ...category,
@@ -142,96 +144,100 @@ const ensureDemoUserId = cache(async function ensureDemoUserId() {
   const accountMap = new Map((accounts ?? []).map((account) => [account.name, account.id]));
   const categoryMap = new Map((categories ?? []).map((category) => [category.name, category.id]));
 
-  const { data: existingBudgets } = await admin.from("budgets").select("month,category_id").eq("user_id", userId);
-  const existingBudgetKeys = new Set(
-    (existingBudgets ?? []).map((budget) => `${budget.month}:${budget.category_id ?? "all"}`),
-  );
-  const budgetsToInsert = mockBudgets
-    .map(({ id: _id, user_id: _userId, created_at: _createdAt, updated_at: _updatedAt, category_id, ...budget }) => ({
-      ...budget,
-      user_id: userId,
-      category_id:
-        category_id === null
-          ? null
-          : categoryMap.get(mockCategories.find((category) => category.id === category_id)?.name ?? "") ?? null,
-    }))
-    .filter((budget) => !existingBudgetKeys.has(`${budget.month}:${budget.category_id ?? "all"}`));
-  if (budgetsToInsert.length > 0) {
-    const { error } = await admin.from("budgets").insert(budgetsToInsert);
-    if (error) throw error;
+  if (createdDemoUser) {
+    const { data: existingBudgets } = await admin.from("budgets").select("month,category_id").eq("user_id", userId);
+    const existingBudgetKeys = new Set(
+      (existingBudgets ?? []).map((budget) => `${budget.month}:${budget.category_id ?? "all"}`),
+    );
+    const budgetsToInsert = mockBudgets
+      .map(({ id: _id, user_id: _userId, created_at: _createdAt, updated_at: _updatedAt, category_id, ...budget }) => ({
+        ...budget,
+        user_id: userId,
+        category_id:
+          category_id === null
+            ? null
+            : categoryMap.get(mockCategories.find((category) => category.id === category_id)?.name ?? "") ?? null,
+      }))
+      .filter((budget) => !existingBudgetKeys.has(`${budget.month}:${budget.category_id ?? "all"}`));
+    if (budgetsToInsert.length > 0) {
+      const { error } = await admin.from("budgets").insert(budgetsToInsert);
+      if (error) throw error;
+    }
+
+    const { data: existingGoals } = await admin.from("saving_goals").select("id").eq("user_id", userId);
+    if ((existingGoals ?? []).length === 0) {
+      const goalsToInsert = mockGoals.map(
+        ({ id: _id, user_id: _userId, created_at: _createdAt, updated_at: _updatedAt, ...goal }) => ({
+          ...goal,
+          user_id: userId,
+        }),
+      );
+      const { error } = await admin.from("saving_goals").insert(goalsToInsert);
+      if (error) throw error;
+    }
   }
 
-  const { data: existingGoals } = await admin.from("saving_goals").select("id").eq("user_id", userId);
-  if ((existingGoals ?? []).length === 0) {
-    const goalsToInsert = mockGoals.map(
-      ({ id: _id, user_id: _userId, created_at: _createdAt, updated_at: _updatedAt, ...goal }) => ({
-        ...goal,
+  if (createdDemoUser) {
+    const transactionsPayload = mockTransactions.map(
+      ({
+        id: _id,
+        user_id: _userId,
+        created_at: _createdAt,
+        updated_at: _updatedAt,
+        from_account_id,
+        to_account_id,
+        category_id,
+        ...transaction
+      }) => ({
+        ...transaction,
         user_id: userId,
+        from_account_id:
+          from_account_id === null
+            ? null
+            : accountMap.get(mockAccounts.find((account) => account.id === from_account_id)?.name ?? "") ?? null,
+        to_account_id:
+          to_account_id === null
+            ? null
+            : accountMap.get(mockAccounts.find((account) => account.id === to_account_id)?.name ?? "") ?? null,
+        category_id:
+          category_id === null
+            ? null
+            : categoryMap.get(mockCategories.find((category) => category.id === category_id)?.name ?? "") ?? null,
       }),
     );
-    const { error } = await admin.from("saving_goals").insert(goalsToInsert);
-    if (error) throw error;
-  }
-
-  const transactionsPayload = mockTransactions.map(
-    ({
-      id: _id,
-      user_id: _userId,
-      created_at: _createdAt,
-      updated_at: _updatedAt,
-      from_account_id,
-      to_account_id,
-      category_id,
-      ...transaction
-    }) => ({
-      ...transaction,
-      user_id: userId,
-      from_account_id:
-        from_account_id === null
-          ? null
-          : accountMap.get(mockAccounts.find((account) => account.id === from_account_id)?.name ?? "") ?? null,
-      to_account_id:
-        to_account_id === null
-          ? null
-          : accountMap.get(mockAccounts.find((account) => account.id === to_account_id)?.name ?? "") ?? null,
-      category_id:
-        category_id === null
-          ? null
-          : categoryMap.get(mockCategories.find((category) => category.id === category_id)?.name ?? "") ?? null,
-    }),
-  );
-  const { data: existingTransactions } = await admin
-    .from("transactions")
-    .select("transaction_date,amount,merchant_name,external_id")
-    .eq("user_id", userId);
-  const existingTransactionKeys = new Set(
-    (existingTransactions ?? []).map(
-      (transaction) =>
-        `${transaction.transaction_date}:${transaction.amount}:${transaction.merchant_name ?? ""}:${transaction.external_id ?? ""}`,
-    ),
-  );
-  const transactionsToInsert = transactionsPayload.filter(
-    (transaction) =>
-      !existingTransactionKeys.has(
-        `${transaction.transaction_date}:${transaction.amount}:${transaction.merchant_name ?? ""}:${transaction.external_id ?? ""}`,
+    const { data: existingTransactions } = await admin
+      .from("transactions")
+      .select("transaction_date,amount,merchant_name,external_id")
+      .eq("user_id", userId);
+    const existingTransactionKeys = new Set(
+      (existingTransactions ?? []).map(
+        (transaction) =>
+          `${transaction.transaction_date}:${transaction.amount}:${transaction.merchant_name ?? ""}:${transaction.external_id ?? ""}`,
       ),
-  );
-  if (transactionsToInsert.length > 0) {
-    const { error } = await admin.from("transactions").insert(transactionsToInsert);
-    if (error) throw error;
-  }
+    );
+    const transactionsToInsert = transactionsPayload.filter(
+      (transaction) =>
+        !existingTransactionKeys.has(
+          `${transaction.transaction_date}:${transaction.amount}:${transaction.merchant_name ?? ""}:${transaction.external_id ?? ""}`,
+        ),
+    );
+    if (transactionsToInsert.length > 0) {
+      const { error } = await admin.from("transactions").insert(transactionsToInsert);
+      if (error) throw error;
+    }
 
-  const { data: existingAlerts } = await admin.from("alerts").select("title").eq("user_id", userId);
-  const existingAlertTitles = new Set((existingAlerts ?? []).map((alert) => alert.title));
-  const alertsToInsert = mockAlerts
-    .filter((alert) => !existingAlertTitles.has(alert.title))
-    .map(({ id: _id, user_id: _userId, ...alert }) => ({
-      ...alert,
-      user_id: userId,
-    }));
-  if (alertsToInsert.length > 0) {
-    const { error } = await admin.from("alerts").insert(alertsToInsert);
-    if (error) throw error;
+    const { data: existingAlerts } = await admin.from("alerts").select("title").eq("user_id", userId);
+    const existingAlertTitles = new Set((existingAlerts ?? []).map((alert) => alert.title));
+    const alertsToInsert = mockAlerts
+      .filter((alert) => !existingAlertTitles.has(alert.title))
+      .map(({ id: _id, user_id: _userId, ...alert }) => ({
+        ...alert,
+        user_id: userId,
+      }));
+    if (alertsToInsert.length > 0) {
+      const { error } = await admin.from("alerts").insert(alertsToInsert);
+      if (error) throw error;
+    }
   }
 
   return userId;
