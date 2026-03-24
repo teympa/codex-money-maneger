@@ -1,6 +1,7 @@
 import { createServerClient, type CookieMethodsServer } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { isDemoModeEnabled } from "@/lib/env";
 
 const PUBLIC_PATHS = ["/login"];
 
@@ -12,7 +13,7 @@ export async function middleware(request: NextRequest) {
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const demoModeEnabled = process.env.DEMO_MODE === "true";
+  const demoModeEnabled = isDemoModeEnabled();
 
   // Supabase未設定時とデモモードではログインを必須にしない。
   if (!supabaseUrl || !supabaseAnonKey || demoModeEnabled) {

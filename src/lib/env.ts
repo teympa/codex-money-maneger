@@ -1,3 +1,23 @@
+function withProtocol(value: string) {
+  if (!value) return value;
+  if (/^https?:\/\//i.test(value)) return value;
+  if (value.includes("vercel.app") || value.includes("ngrok") || value.includes(".")) {
+    return `https://${value}`;
+  }
+  return value;
+}
+
+function normalizeAppUrl(value: string) {
+  const candidate = withProtocol(value.trim());
+
+  try {
+    const url = new URL(candidate);
+    return url.origin;
+  } catch {
+    return candidate.replace(/\/+$/, "");
+  }
+}
+
 export function isSupabaseConfigured() {
   return Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
@@ -10,12 +30,28 @@ export function isProductionRuntime() {
   return process.env.NODE_ENV === "production" || process.env.VERCEL_ENV === "production";
 }
 
-export function isDemoModeEnabled() {
+export function isDemoModeRequested() {
   return process.env.DEMO_MODE === "true" || process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 }
 
+export function isDemoModeEnabled() {
+  const requested = isDemoModeRequested();
+  const allowInProduction = process.env.ALLOW_DEMO_MODE_IN_PRODUCTION === "true";
+
+  if (isProductionRuntime() && !allowInProduction) {
+    return false;
+  }
+
+  return requested;
+}
+
 export function getAppBaseUrl() {
-  return process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const rawValue = process.env.APP_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  return normalizeAppUrl(rawValue);
+}
+
+export function getDashboardUrl() {
+  return `${getAppBaseUrl().replace(/\/$/, "")}/dashboard`;
 }
 
 export function hasConfiguredLineMessagingApi() {
@@ -44,6 +80,7 @@ export function getProductionReadiness() {
     cronSecretReady: hasStrongCronSecret(),
     usesHttps,
     looksTemporaryUrl,
+    demoModeRequested: isDemoModeRequested(),
     demoModeEnabled: isDemoModeEnabled(),
     productionRuntime: isProductionRuntime(),
   };

@@ -13,7 +13,9 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-const demoModeEnabled = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
+const demoModeEnabled =
+  process.env.NEXT_PUBLIC_DEMO_MODE === "true" &&
+  process.env.NODE_ENV !== "production";
 
 export function LoginForm() {
   const [message, setMessage] = useState("");

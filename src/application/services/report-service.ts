@@ -7,7 +7,8 @@ import {
   sumTransactionsByKind,
 } from "@/domain/finance";
 import { createAdminSupabaseClient } from "@/infrastructure/supabase/admin";
-import { APP_BASE_URL, getCurrentMonthKey } from "@/lib/constants";
+import { getCurrentMonthKey } from "@/lib/constants";
+import { getDashboardUrl } from "@/lib/env";
 import { formatCurrency } from "@/lib/format";
 import {
   getAccounts,
@@ -28,7 +29,7 @@ import type {
 } from "@/types/domain";
 
 function buildDailyReportText(summary: DashboardSummary) {
-  const appUrl = `${APP_BASE_URL.replace(/\/$/, "")}/dashboard`;
+  const appUrl = getDashboardUrl();
   const riskyLines = summary.riskyCategories.length
     ? summary.riskyCategories
         .slice(0, 3)
