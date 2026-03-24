@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { isDemoModeEnabled, isSupabaseConfigured } from "@/lib/env";
+import { getAppBaseUrl, isDemoModeEnabled, isSupabaseConfigured } from "@/lib/env";
 import { createServerSupabaseClient } from "@/infrastructure/supabase/server";
 
 const schema = z.object({
@@ -20,6 +20,9 @@ export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient();
   const { error } = await supabase.auth.signInWithOtp({
     email: body.email,
+    options: {
+      emailRedirectTo: `${getAppBaseUrl()}/auth/callback`,
+    },
   });
 
   if (error) {
