@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DeleteGoalButton } from "@/components/goals/delete-goal-button";
+import { GoalContributionForm } from "@/components/goals/goal-contribution-form";
 import { GoalForm } from "@/components/forms/goal-form";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
@@ -14,15 +15,17 @@ export default async function GoalsPage() {
     <div className="space-y-6">
       <PageHeader
         title="貯金計画"
-        description="旅行積立や防衛資金など、目標ごとの進み具合を確認できます。"
+        description="旅行や防衛資金などの目標を管理できます。追加した積立額は一覧からそのまま反映できます。"
       />
 
       <section className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <Card className="space-y-4">
-          <h2 className="text-lg font-semibold text-ink">進行中の目標</h2>
+          <h2 className="text-lg font-semibold text-ink">登録中の目標</h2>
           <div className="space-y-4">
             {goals.length === 0 ? (
-              <p className="text-sm text-slate-500">まだ目標がありません。右側のフォームから追加できます。</p>
+              <p className="text-sm text-slate-500">
+                まだ目標がありません。右側のフォームから追加できます。
+              </p>
             ) : null}
 
             {goals.map((goal) => {
@@ -31,8 +34,10 @@ export default async function GoalsPage() {
               return (
                 <div key={goal.id} className="rounded-2xl border border-slate-200 p-4">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="font-medium">{goal.title}</p>
-                    <StatusBadge tone={progressRate >= 50 ? "success" : "warning"}>{progressRate}%</StatusBadge>
+                    <p className="font-medium text-ink">{goal.title}</p>
+                    <StatusBadge tone={progressRate >= 50 ? "success" : "warning"}>
+                      {progressRate}%
+                    </StatusBadge>
                   </div>
 
                   <div className="mt-3 h-3 rounded-full bg-slate-100">
@@ -46,8 +51,10 @@ export default async function GoalsPage() {
                     {formatCurrency(goal.current_amount)} / {formatCurrency(goal.target_amount)}
                   </p>
                   <p className="text-sm text-slate-500">
-                    毎月必要額: {formatCurrency(goal.monthly_required_amount)} / 期限: {goal.deadline}
+                    毎月必要額 {formatCurrency(goal.monthly_required_amount)} / 期限: {goal.deadline}
                   </p>
+
+                  <GoalContributionForm goal={goal} />
 
                   <div className="mt-4 flex flex-wrap gap-2">
                     <Link
