@@ -89,7 +89,7 @@ export function LineNotificationSettingsForm({
         throw new Error(result.message ?? "LINEへのテスト送信に失敗しました。");
       }
 
-      setMessage(result.message ?? "LINEにテストメッセージを送信しました。");
+      setMessage(result.message ?? "LINE にテストメッセージを送信しました。");
       router.refresh();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "LINEへのテスト送信に失敗しました。");
@@ -123,11 +123,11 @@ export function LineNotificationSettingsForm({
 
       if (firstUserId) {
         setForm((current) => ({ ...current, line_user_id: firstUserId }));
-        setMessage("最新の Webhook から LINE ユーザーID を読み取りました。必要ならそのまま保存してください。");
+        setMessage("最新の Webhook から LINE ユーザーID を反映しました。必要ならそのまま保存してください。");
       } else if (result.latest) {
-        setMessage("Webhook は届いていますが、userId を含むイベントはまだ見つかっていません。");
+        setMessage("Webhook は届いていますが、userId を含むイベントは見つかりませんでした。");
       } else {
-        setMessage("まだ Webhook を受信していません。LINE からメッセージを送ってから再確認してください。");
+        setMessage("まだ Webhook を受信していません。LINE からメッセージを送ってから再度確認してください。");
       }
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Webhook の確認に失敗しました。");
@@ -137,7 +137,7 @@ export function LineNotificationSettingsForm({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="space-y-1">
           <span className="block text-sm font-medium text-slate-700">LINE ユーザーID</span>
@@ -148,7 +148,7 @@ export function LineNotificationSettingsForm({
             placeholder="Uxxxxxxxxxxxx"
           />
           <span className="block text-xs text-slate-400">
-            まずは手入力で使います。後からLINE連携導線を追加しやすい構成です。
+            Webhook から取得した userId を入れます。分からないときは下の「最新Webhookを確認」を使えます。
           </span>
         </label>
 
@@ -160,7 +160,9 @@ export function LineNotificationSettingsForm({
             onChange={(event) => updateField("daily_report_time", event.target.value)}
             className="w-full rounded-2xl border border-slate-200 px-4 py-3"
           />
-          <span className="block text-xs text-slate-400">毎日の家計レポートを送りたい時刻です。</span>
+          <span className="block text-xs text-slate-400">
+            毎日レポートを送る基準時刻です。
+          </span>
         </label>
       </div>
 
@@ -187,7 +189,7 @@ export function LineNotificationSettingsForm({
           />
           <div>
             <p className="font-medium text-ink">毎日レポートを送る</p>
-            <p className="text-sm text-slate-500">今月の支出や残予算を毎朝まとめて送ります。</p>
+            <p className="text-sm text-slate-500">毎朝の家計レポートを自動送信します。</p>
           </div>
         </label>
 
@@ -199,8 +201,8 @@ export function LineNotificationSettingsForm({
             className="mt-1 h-4 w-4 rounded border-slate-300"
           />
           <div>
-            <p className="font-medium text-ink">予算超過通知を送る</p>
-            <p className="text-sm text-slate-500">使いすぎの兆候が出たときに通知しやすくします。</p>
+            <p className="font-medium text-ink">使いすぎ通知を送る</p>
+            <p className="text-sm text-slate-500">予算超過やしきい値超過の通知に使います。</p>
           </div>
         </label>
 
@@ -212,20 +214,20 @@ export function LineNotificationSettingsForm({
             className="mt-1 h-4 w-4 rounded border-slate-300"
           />
           <div>
-            <p className="font-medium text-ink">同期失敗通知を送る</p>
-            <p className="text-sm text-slate-500">将来の外部連携エラー通知に使う土台です。</p>
+            <p className="font-medium text-ink">連携エラー通知を送る</p>
+            <p className="text-sm text-slate-500">今後の外部連携や同期失敗の通知に使います。</p>
           </div>
         </label>
       </div>
 
       <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">
-        <p className="font-medium text-ink">実接続の手順</p>
+        <p className="font-medium text-ink">接続手順の目安</p>
         <ol className="mt-2 list-decimal space-y-1 pl-5">
-          <li>`.env.local` に `LINE_CHANNEL_ACCESS_TOKEN` を設定する</li>
-          <li>LINE Developers 側の Webhook URL に `/api/line/webhook` を設定する</li>
-          <li>LINE から公式アカウントへ1通メッセージを送る</li>
-          <li>`最新Webhookを確認` で userId を読み取り、`通知設定を保存` する</li>
-          <li>`LINEにテスト送信` を押して確認する</li>
+          <li>環境変数に `LINE_CHANNEL_ACCESS_TOKEN` と `LINE_CHANNEL_SECRET` を設定する</li>
+          <li>LINE Developers で Webhook URL に `/api/line/webhook` を設定する</li>
+          <li>公式アカウントへ 1 通メッセージを送り、Webhook を受ける</li>
+          <li>「最新Webhookを確認」で userId を反映し、通知設定を保存する</li>
+          <li>「LINEにテスト送信」で実際に届くか確認する</li>
         </ol>
       </div>
 
@@ -254,7 +256,9 @@ export function LineNotificationSettingsForm({
         </div>
       ) : null}
 
-      {message ? <p className="text-sm text-slate-500">{message}</p> : null}
+      {message ? (
+        <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">{message}</div>
+      ) : null}
 
       {preview ? (
         <div className="rounded-2xl bg-slate-50 p-4">

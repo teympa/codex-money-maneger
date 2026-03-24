@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Smart Kakeibo 使い方ガイド</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #0f172a;
+        --muted: #475569;
+        --line: #dbe4f0;
+        --brand: #2563eb;
+        --soft: #f8fbff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Yu Gothic UI", "Hiragino Sans", "Meiryo", sans-serif;
+        color: var(--ink);
+        background: white;
+        line-height: 1.7;
+      }
+
+      .page {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0 auto;
+        padding: 16mm 16mm 18mm;
+      }
+
+      .hero {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 18px 20px;
+        background: linear-gradient(180deg, #eff6ff 0%, #ffffff 100%);
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        font-size: 12px;
+        letter-spacing: 0.24em;
+        color: var(--brand);
+        text-transform: uppercase;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 30px;
+        line-height: 1.25;
+      }
+
+      .lead {
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      h2 {
+        margin: 28px 0 12px;
+        font-size: 20px;
+        border-left: 5px solid var(--brand);
+        padding-left: 10px;
+      }
+
+      h3 {
+        margin: 0 0 8px;
+        font-size: 16px;
+      }
+
+      p {
+        margin: 0 0 10px;
+      }
+
+      ul, ol {
+        margin: 8px 0 0 20px;
+        padding: 0;
+      }
+
+      li {
+        margin: 4px 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-top: 12px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px 16px;
+        background: var(--soft);
+      }
+
+      .steps {
+        counter-reset: step;
+        list-style: none;
+        margin: 12px 0 0;
+        padding: 0;
+      }
+
+      .steps li {
+        counter-increment: step;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin: 10px 0;
+        background: white;
+      }
+
+      .steps li::before {
+        content: counter(step);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        margin-right: 10px;
+        border-radius: 999px;
+        background: var(--brand);
+        color: white;
+        font-weight: 700;
+      }
+
+      .footer-note {
+        margin-top: 24px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: #f8fafc;
+        border: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @page {
+        size: A4;
+        margin: 10mm;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">Smart Kakeibo</p>
+        <h1>使い方と機能ガイド</h1>
+        <p class="lead">
+          Smart Kakeibo は、日々の明細入力だけでなく、予算確認、貯金目標管理、自然文入力、
+          LINE 通知までまとめて使える個人用家計簿アプリです。
+        </p>
+      </section>
+
+      <h2>主な機能</h2>
+      <div class="grid">
+        <section class="card">
+          <h3>1. 口座管理</h3>
+          <p>銀行、現金、カード、電子マネーを別口座として管理できます。</p>
+          <ul>
+            <li>追加、編集、削除</li>
+            <li>現在残高の確認</li>
+            <li>支払手段ごとの整理</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h3>2. 明細管理</h3>
+          <p>収入、支出、振替、調整を区別して登録できます。</p>
+          <ul>
+            <li>追加、編集、削除</li>
+            <li>口座ごとの流れを維持</li>
+            <li>一覧とダッシュボードへ反映</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h3>3. 自然文入力</h3>
+          <p>自然な日本語から明細候補を作り、確認して保存できます。</p>
+          <ul>
+            <li>例: 今日セコマで620円、昼ごはん</li>
+            <li>自動分類ルールと連携</li>
+            <li>保存前に修正可能</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h3>4. 予算と目標</h3>
+          <p>月予算、カテゴリ予算、貯金目標を管理できます。</p>
+          <ul>
+            <li>消化率、残額、必要月額の表示</li>
+            <li>予算超過アラートの土台</li>
+            <li>追加、編集、削除に対応</li>
+          </ul>
+        </section>
+      </div>
+
+      <h2>基本の使い方</h2>
+      <ol class="steps">
+        <li><strong>ログイン</strong><br />ログイン画面からアプリに入り、ダッシュボードを開きます。</li>
+        <li><strong>口座を確認</strong><br />口座一覧で銀行、現金、カード、電子マネーを確認します。</li>
+        <li><strong>明細を登録</strong><br />手入力か自然文入力で支出や収入を追加します。</li>
+        <li><strong>予算を見る</strong><br />予算画面とダッシュボードで今月の残額や消化率を確認します。</li>
+        <li><strong>目標を管理</strong><br />旅行積立や防衛資金などの目標を作って進捗を見ます。</li>
+      </ol>
+
+      <h2>よく使うページ</h2>
+      <div class="grid">
+        <section class="card">
+          <h3>ダッシュボード</h3>
+          <p>今月支出、残予算、今日あと使える額、月末着地予測を確認できます。</p>
+        </section>
+        <section class="card">
+          <h3>明細一覧</h3>
+          <p>登録した明細をまとめて見て、編集や削除ができます。</p>
+        </section>
+        <section class="card">
+          <h3>自然文入力</h3>
+          <p>文章で入力した内容を明細候補に変換して、確認後に保存できます。</p>
+        </section>
+        <section class="card">
+          <h3>設定</h3>
+          <p>カテゴリ、分類ルール、LINE 通知、本番運用チェックを管理できます。</p>
+        </section>
+      </div>
+
+      <h2>LINE 通知について</h2>
+      <p>
+        LINE と連携すると、テスト送信や日次レポート送信ができます。設定ページから Webhook 確認、
+        userId 取得、通知設定保存、テスト送信まで行えます。
+      </p>
+      <ul>
+        <li>LINE にテスト送信</li>
+        <li>今日のレポートをプレビュー</li>
+        <li>日次レポートの送信ログ確認</li>
+        <li>Supabase Cron による自動送信の土台</li>
+      </ul>
+
+      <h2>現時点の完成イメージ</h2>
+      <p>
+        Smart Kakeibo は、MVP を超えて個人利用なら十分実用に入る完成度です。日常の記録、予算管理、
+        貯金目標、自然文入力、LINE 通知まで揃っているため、毎日使う家計簿として運用しやすい状態です。
+      </p>
+
+      <div class="footer-note">
+        この資料は Smart Kakeibo の現時点の完成内容と、基本的な使い方をまとめたものです。
+      </div>
+    </main>
+  </body>
+</html>
