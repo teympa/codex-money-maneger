@@ -17,6 +17,12 @@ function getTodaySpendableTone(todaySpendable: number) {
   return "success" as const;
 }
 
+function getCategorySpendableDescription(hasBudget: boolean, remainingBudget: number) {
+  if (!hasBudget) return "予算未設定";
+  if (remainingBudget <= 0) return "残額なし";
+  return `残り ${formatCurrency(remainingBudget)}`;
+}
+
 export default async function DashboardPage() {
   const summary = await getDashboardSummary();
 
@@ -30,7 +36,7 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <PageHeader
         title="ダッシュボード"
-        description="今月の支出状況と、今日あといくら使えるかをまとめて確認できます。"
+        description="今月の支出状況と、今日あとどれくらい使えるかをまとめて確認できます。"
       />
 
       <section className="grid gap-3 sm:grid-cols-2">
@@ -67,14 +73,27 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2">
+          {summary.categoryTodaySpendable.map((item) => (
+            <div key={item.categoryName} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-medium text-slate-200">{item.categoryName}で今日あと使える額</p>
+                <StatusBadge tone={item.hasBudget ? getTodaySpendableTone(item.todaySpendable) : "info"}>
+                  {item.hasBudget ? "予算あり" : "予算未設定"}
+                </StatusBadge>
+              </div>
+              <p className="mt-2 text-2xl font-semibold text-white">{formatCurrency(item.todaySpendable)}</p>
+              <p className="mt-2 text-sm text-slate-300">
+                {getCategorySpendableDescription(item.hasBudget, item.remainingBudget)}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-2xl bg-white/10 p-4">
             <p className="text-sm text-slate-300">今月の支出</p>
             <p className="mt-1 text-xl font-semibold">{formatCurrency(summary.monthExpense)}</p>
-          </div>
-          <div className="rounded-2xl bg-white/10 p-4">
-            <p className="text-sm text-slate-300">今月の収入</p>
-            <p className="mt-1 text-xl font-semibold">{formatCurrency(summary.monthIncome)}</p>
           </div>
           <div className="rounded-2xl bg-white/10 p-4">
             <p className="text-sm text-slate-300">残予算</p>
@@ -89,7 +108,7 @@ export default async function DashboardPage() {
             <div>
               <h2 className="text-lg font-semibold text-ink">予算アラート</h2>
               <p className="mt-1 text-sm text-slate-500">
-                予算のしきい値を超えた項目だけを通知として表示しています。
+                予算のしきい値を超えた項目だけをまとめて表示しています。
               </p>
             </div>
             <StatusBadge tone="warning">{summary.alerts.length}件</StatusBadge>
@@ -124,7 +143,7 @@ export default async function DashboardPage() {
             <div>
               <h2 className="text-lg font-semibold text-ink">月末着地の見込み</h2>
               <p className="mt-1 text-sm text-slate-500">
-                今の支出ペースが月末まで続いた場合、最終的にいくら使いそうかを見ています。
+                今の支出ペースが月末まで続いた場合の予測です。
               </p>
             </div>
             <StatusBadge tone={projectedTone}>
@@ -138,7 +157,7 @@ export default async function DashboardPage() {
               <p className="mt-1 text-xl font-semibold text-ink">{formatCurrency(summary.projectedMonthEnd)}</p>
             </div>
             <div className="rounded-2xl bg-slate-50 p-4">
-              <p className="text-sm text-slate-500">今月予算</p>
+              <p className="text-sm text-slate-500">月予算</p>
               <p className="mt-1 text-xl font-semibold text-ink">{formatCurrency(summary.budgetTotal)}</p>
             </div>
           </div>
@@ -151,7 +170,7 @@ export default async function DashboardPage() {
             <p className="mt-2 text-sm text-slate-500">
               {projectedGap < 0
                 ? "このままだと今月予算を超える見込みです。"
-                : "今のペースなら今月予算内に収まる見込みです。"}
+                : "今のペースなら月予算内に収まる見込みです。"}
             </p>
           </div>
         </Card>
@@ -242,7 +261,7 @@ export default async function DashboardPage() {
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <p className="font-medium text-ink">{goal.title}</p>
                   <StatusBadge tone={goal.isRisky ? "warning" : "success"}>
-                    {goal.isRisky ? "要確認" : "順調"}
+                    {goal.isRisky ? "要注意" : "順調"}
                   </StatusBadge>
                 </div>
                 <div className="h-3 rounded-full bg-slate-100">

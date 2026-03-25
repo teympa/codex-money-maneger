@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import { APP_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -9,8 +10,24 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ja">
-      <body>{children}</body>
+    <html lang="ja" suppressHydrationWarning>
+      <body>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                try {
+                  var theme = localStorage.getItem("smart-kakeibo-theme") || "default";
+                  document.documentElement.dataset.theme = theme;
+                } catch (error) {
+                  document.documentElement.dataset.theme = "default";
+                }
+              })();
+            `,
+          }}
+        />
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

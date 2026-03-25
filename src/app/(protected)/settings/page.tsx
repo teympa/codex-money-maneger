@@ -3,6 +3,7 @@ import { ClassificationRulesManager } from "@/components/settings/classification
 import { CategoriesManager } from "@/components/settings/categories-manager";
 import { ProductionReadinessCard } from "@/components/settings/production-readiness-card";
 import { SettingsSection } from "@/components/settings/settings-section";
+import { ThemeSwitcher } from "@/components/settings/theme-switcher";
 import { Card } from "@/components/shared/card";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -74,6 +75,8 @@ export default async function SettingsPage() {
           tone={notification.daily_report_enabled ? "success" : "info"}
         />
       </section>
+
+      <ThemeSwitcher />
 
       <SettingsSection
         title="カテゴリ設定"

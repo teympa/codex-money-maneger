@@ -125,7 +125,7 @@ export function ClassificationRuleForm({
           className="w-full rounded-2xl border border-slate-200 px-4 py-3"
           placeholder="例: セイコーマート"
         />
-        <p className="mt-1 text-xs text-slate-400">解析された加盟店名に一致したときも適用します。</p>
+        <p className="mt-1 text-xs text-slate-400">解析された加盟店名に一致したときにも適用します。</p>
       </div>
 
       <div>
@@ -164,8 +164,8 @@ export function ClassificationRuleForm({
       </div>
 
       <div className="sm:col-span-2 flex flex-wrap gap-2">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "保存中..." : submitLabel}
+        <Button type="submit" isLoading={isSubmitting} loadingText={rule ? "更新中..." : "追加中..."}>
+          {submitLabel}
         </Button>
         {onCancel ? (
           <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>

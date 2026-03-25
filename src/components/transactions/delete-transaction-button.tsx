@@ -27,8 +27,14 @@ export function DeleteTransactionButton({ id }: { id: string }) {
   }
 
   return (
-    <Button variant="ghost" type="button" onClick={handleDelete} disabled={isDeleting}>
-      {isDeleting ? "削除中..." : "削除"}
+    <Button
+      variant="ghost"
+      type="button"
+      onClick={handleDelete}
+      isLoading={isDeleting}
+      loadingText="削除中..."
+    >
+      削除
     </Button>
   );
 }

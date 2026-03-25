@@ -111,7 +111,12 @@ export default async function BudgetsPage() {
                           <div className="mt-3 flex items-center justify-end gap-3">
                             <Link
                               href={`/budgets/${item.budget.id}/edit`}
-                              className="text-sm font-medium text-brand-700"
+                              className="theme-button theme-button--secondary inline-flex items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-medium"
+                              style={{
+                                borderColor: "rgba(0, 0, 0, 0.7)",
+                                background: "var(--button-secondary-background)",
+                                color: "var(--button-secondary-text)",
+                              }}
                             >
                               編集
                             </Link>

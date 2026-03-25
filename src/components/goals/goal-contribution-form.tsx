@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/shared/button";
 import type { SavingGoal } from "@/types/domain";
 
@@ -60,9 +60,7 @@ export function GoalContributionForm({ goal }: { goal: SavingGoal }) {
   return (
     <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
       <p className="text-sm font-medium text-ink">積立額を追加</p>
-      <p className="mt-1 text-xs text-slate-500">
-        現在額に今回の積立分を足し込みます。
-      </p>
+      <p className="mt-1 text-xs text-slate-500">現在額に今回の積立分を足し込みます。</p>
 
       <div className="mt-3 flex flex-wrap gap-2">
         {QUICK_AMOUNTS.map((amount) => (
@@ -86,14 +84,16 @@ export function GoalContributionForm({ goal }: { goal: SavingGoal }) {
           value={amountText}
           onChange={(event) => setAmountText(event.target.value)}
           className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm"
-          placeholder="任意の積立額を入力"
+          placeholder="追加する積立額を入力"
         />
         <Button
           type="button"
           disabled={isSubmitting || parsedAmount <= 0}
+          isLoading={isSubmitting}
+          loadingText="積立中..."
           onClick={() => submitContribution(parsedAmount)}
         >
-          {isSubmitting ? "追加中..." : "追加する"}
+          積立する
         </Button>
       </div>
 

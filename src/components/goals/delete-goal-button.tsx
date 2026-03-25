@@ -9,11 +9,10 @@ export function DeleteGoalButton({ id }: { id: string }) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   async function handleDelete() {
-    const confirmed = window.confirm("この目標を削除しますか？");
-    if (!confirmed) return;
+    if (!window.confirm("この目標を削除しますか？")) return;
 
-    setIsDeleting(true);
     try {
+      setIsDeleting(true);
       const response = await fetch(`/api/goals/${id}`, { method: "DELETE" });
       const result = (await response.json()) as { message?: string };
 
@@ -30,8 +29,14 @@ export function DeleteGoalButton({ id }: { id: string }) {
   }
 
   return (
-    <Button type="button" variant="secondary" onClick={handleDelete} disabled={isDeleting}>
-      {isDeleting ? "削除中..." : "削除"}
+    <Button
+      type="button"
+      variant="secondary"
+      onClick={handleDelete}
+      isLoading={isDeleting}
+      loadingText="削除中..."
+    >
+      削除
     </Button>
   );
 }

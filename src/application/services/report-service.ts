@@ -78,6 +78,20 @@ function buildSummaryFromData(params: {
 
   const budgetTotal = summaries.find((item) => item.budget.category_id === null)?.budget.budget_amount ?? 0;
   const remainingBudget = Math.max(budgetTotal - monthExpense, 0);
+  const focusCategoryNames = ["食費", "娯楽"];
+  const categoryTodaySpendable = focusCategoryNames.map((categoryName) => {
+    const summary = summaries.find((item) => item.categoryName === categoryName && item.budget.category_id !== null);
+    const categoryRemainingBudget = summary
+      ? Math.max(summary.budget.budget_amount - summary.spent, 0)
+      : 0;
+
+    return {
+      categoryName,
+      remainingBudget: categoryRemainingBudget,
+      todaySpendable: summary ? calculateTodaySpendable(categoryRemainingBudget, now) : 0,
+      hasBudget: Boolean(summary),
+    };
+  });
 
   return {
     monthIncome,
@@ -85,6 +99,7 @@ function buildSummaryFromData(params: {
     budgetTotal,
     remainingBudget,
     todaySpendable: calculateTodaySpendable(remainingBudget, now),
+    categoryTodaySpendable,
     projectedMonthEnd: calculateProjectedMonthEnd(monthExpense, now),
     bankBalance: balances.filter((item) => item.account.type === "bank").reduce((sum, item) => sum + item.balance, 0),
     cashBalance: balances

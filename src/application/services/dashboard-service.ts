@@ -42,6 +42,21 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
 
   const budgetTotal = summaries.find((item) => item.budget.category_id === null)?.budget.budget_amount ?? 0;
   const remainingBudget = Math.max(budgetTotal - monthExpense, 0);
+  const focusCategoryNames = ["食費", "娯楽"];
+
+  const categoryTodaySpendable = focusCategoryNames.map((categoryName) => {
+    const summary = summaries.find((item) => item.categoryName === categoryName && item.budget.category_id !== null);
+    const categoryRemainingBudget = summary
+      ? Math.max(summary.budget.budget_amount - summary.spent, 0)
+      : 0;
+
+    return {
+      categoryName,
+      remainingBudget: categoryRemainingBudget,
+      todaySpendable: summary ? calculateTodaySpendable(categoryRemainingBudget, now) : 0,
+      hasBudget: Boolean(summary),
+    };
+  });
 
   return {
     monthIncome,
@@ -49,35 +64,68 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
     budgetTotal,
     remainingBudget,
     todaySpendable: calculateTodaySpendable(remainingBudget, now),
+    categoryTodaySpendable,
     projectedMonthEnd: calculateProjectedMonthEnd(monthExpense, now),
-    bankBalance: balances.filter((item) => item.account.type === "bank").reduce((sum, item) => sum + item.balance, 0),
-    cashBalance: balances.filter((item) => item.account.type === "cash" || item.account.type === "wallet").reduce((sum, item) => sum + item.balance, 0),
-    emoneyBalance: balances.filter((item) => item.account.type === "emoney").reduce((sum, item) => sum + item.balance, 0),
+    bankBalance: balances
+      .filter((item) => item.account.type === "bank")
+      .reduce((sum, item) => sum + item.balance, 0),
+    cashBalance: balances
+      .filter((item) => item.account.type === "cash" || item.account.type === "wallet")
+      .reduce((sum, item) => sum + item.balance, 0),
+    emoneyBalance: balances
+      .filter((item) => item.account.type === "emoney")
+      .reduce((sum, item) => sum + item.balance, 0),
     paymentBreakdown: [
       {
         label: "現金",
-        amount: transactions.filter((transaction) => transaction.transaction_kind === "expense" && accounts.find((account) => account.id === transaction.from_account_id)?.type === "cash").reduce((sum, transaction) => sum + transaction.amount, 0),
+        amount: transactions
+          .filter(
+            (transaction) =>
+              transaction.transaction_kind === "expense" &&
+              accounts.find((account) => account.id === transaction.from_account_id)?.type === "cash",
+          )
+          .reduce((sum, transaction) => sum + transaction.amount, 0),
       },
       {
         label: "カード",
-        amount: transactions.filter((transaction) => transaction.transaction_kind === "expense" && accounts.find((account) => account.id === transaction.from_account_id)?.type === "card").reduce((sum, transaction) => sum + transaction.amount, 0),
+        amount: transactions
+          .filter(
+            (transaction) =>
+              transaction.transaction_kind === "expense" &&
+              accounts.find((account) => account.id === transaction.from_account_id)?.type === "card",
+          )
+          .reduce((sum, transaction) => sum + transaction.amount, 0),
       },
       {
         label: "電子マネー",
-        amount: transactions.filter((transaction) => transaction.transaction_kind === "expense" && accounts.find((account) => account.id === transaction.from_account_id)?.type === "emoney").reduce((sum, transaction) => sum + transaction.amount, 0),
+        amount: transactions
+          .filter(
+            (transaction) =>
+              transaction.transaction_kind === "expense" &&
+              accounts.find((account) => account.id === transaction.from_account_id)?.type === "emoney",
+          )
+          .reduce((sum, transaction) => sum + transaction.amount, 0),
       },
       {
         label: "銀行引落",
-        amount: transactions.filter((transaction) => transaction.transaction_kind === "expense" && accounts.find((account) => account.id === transaction.from_account_id)?.type === "bank").reduce((sum, transaction) => sum + transaction.amount, 0),
+        amount: transactions
+          .filter(
+            (transaction) =>
+              transaction.transaction_kind === "expense" &&
+              accounts.find((account) => account.id === transaction.from_account_id)?.type === "bank",
+          )
+          .reduce((sum, transaction) => sum + transaction.amount, 0),
       },
     ],
-    riskyCategories: summaries.filter((item) => item.budget.category_id !== null && item.rate >= 60).map((item) => ({
-      categoryName: item.categoryName,
-      spent: item.spent,
-      budget: item.budget.budget_amount,
-      rate: item.rate,
-      severity: item.severity,
-    })),
+    riskyCategories: summaries
+      .filter((item) => item.budget.category_id !== null && item.rate >= 60)
+      .map((item) => ({
+        categoryName: item.categoryName,
+        spent: item.spent,
+        budget: item.budget.budget_amount,
+        rate: item.rate,
+        severity: item.severity,
+      })),
     goals: getGoalProgress(goals),
     alerts,
   };

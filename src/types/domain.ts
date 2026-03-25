@@ -146,6 +146,12 @@ export interface DashboardSummary {
   budgetTotal: number;
   remainingBudget: number;
   todaySpendable: number;
+  categoryTodaySpendable: Array<{
+    categoryName: string;
+    remainingBudget: number;
+    todaySpendable: number;
+    hasBudget: boolean;
+  }>;
   projectedMonthEnd: number;
   bankBalance: number;
   cashBalance: number;

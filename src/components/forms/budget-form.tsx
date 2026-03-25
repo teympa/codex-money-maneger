@@ -88,6 +88,7 @@ export function BudgetForm({
         <label className="mb-1 block text-sm font-medium text-slate-700">対象月</label>
         <input type="month" {...register("month")} className="w-full rounded-2xl border border-slate-200 px-4 py-3" />
       </div>
+
       <div>
         <label className="mb-1 block text-sm font-medium text-slate-700">カテゴリ</label>
         <select {...register("category_id")} className="w-full rounded-2xl border border-slate-200 px-4 py-3">
@@ -98,8 +99,9 @@ export function BudgetForm({
             </option>
           ))}
         </select>
-        <p className="mt-1 text-xs text-slate-400">空欄なら月全体の予算になります。</p>
+        <p className="mt-1 text-xs text-slate-400">空欄のままなら月全体の予算になります。</p>
       </div>
+
       <div>
         <label className="mb-1 block text-sm font-medium text-slate-700">予算額</label>
         <input
@@ -110,6 +112,7 @@ export function BudgetForm({
         />
         {errors.budget_amount ? <p className="mt-1 text-xs text-red-600">{errors.budget_amount.message}</p> : null}
       </div>
+
       <div>
         <label className="mb-1 block text-sm font-medium text-slate-700">警告しきい値 (%)</label>
         <input
@@ -120,9 +123,14 @@ export function BudgetForm({
         />
         <p className="mt-1 text-xs text-slate-400">80 なら予算の 80% 消化で warning になります。</p>
       </div>
+
       <div className="sm:col-span-2 flex flex-col gap-2">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "保存中..." : isEdit ? "更新する" : "予算を追加"}
+        <Button
+          type="submit"
+          isLoading={isSubmitting}
+          loadingText={isEdit ? "更新中..." : "追加中..."}
+        >
+          {isEdit ? "更新する" : "予算を追加"}
         </Button>
         {message ? <p className="text-sm text-slate-500">{message}</p> : null}
       </div>

@@ -59,7 +59,12 @@ export default async function GoalsPage() {
                   <div className="mt-4 flex flex-wrap gap-2">
                     <Link
                       href={`/goals/${goal.id}/edit`}
-                      className="inline-flex items-center justify-center rounded-2xl bg-slate-100 px-4 py-2.5 text-sm font-medium text-slate-900 transition hover:bg-slate-200"
+                      className="theme-button theme-button--secondary inline-flex items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-medium transition"
+                      style={{
+                        borderColor: "rgba(0, 0, 0, 0.7)",
+                        background: "var(--button-secondary-background)",
+                        color: "var(--button-secondary-text)",
+                      }}
                     >
                       編集
                     </Link>

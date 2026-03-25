@@ -13,7 +13,12 @@ const schema = z.object({
   target_amount: z.coerce.number().int().positive("目標金額は1円以上で入力してください。"),
   current_amount: z.coerce.number().int().min(0, "現在額は0円以上で入力してください。"),
   deadline: z.string().min(1, "期限を入力してください。"),
-  priority: z.coerce.number().int().min(1, "優先度は1以上で入力してください。").max(5, "優先度は5以下で入力してください。"),
+  priority: z
+    .coerce
+    .number()
+    .int()
+    .min(1, "優先度は1以上で入力してください。")
+    .max(5, "優先度は5以下で入力してください。"),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -147,13 +152,17 @@ export function GoalForm({ initialValue }: { initialValue?: SavingGoal | null })
           className="w-full rounded-2xl border border-slate-200 px-4 py-3"
           placeholder="1"
         />
-        <p className="mt-1 text-xs text-slate-400">1が最優先で、数字が大きいほど後ろに並びます。</p>
+        <p className="mt-1 text-xs text-slate-400">1が最優先です。数字が大きいほど後回しになります。</p>
         {errors.priority ? <p className="mt-1 text-xs text-red-600">{errors.priority.message}</p> : null}
       </div>
 
       <div className="sm:col-span-2 flex flex-col gap-2">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "保存中..." : isEdit ? "更新する" : "目標を追加"}
+        <Button
+          type="submit"
+          isLoading={isSubmitting}
+          loadingText={isEdit ? "更新中..." : "追加中..."}
+        >
+          {isEdit ? "更新する" : "目標を追加"}
         </Button>
         {message ? <p className="text-sm text-slate-500">{message}</p> : null}
       </div>

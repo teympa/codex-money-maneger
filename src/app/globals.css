@@ -2,14 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root,
+html[data-theme="default"] {
   color-scheme: light;
+  --app-background:
+    radial-gradient(circle at top, rgba(49, 151, 255, 0.15), transparent 40%),
+    linear-gradient(180deg, #f8fbff 0%, #f8fafc 65%, #eef2ff 100%);
+  --body-background: #f8fafc;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --card-background: rgba(255, 255, 255, 0.96);
+  --card-border: #e2e8f0;
+  --card-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --topbar-background: rgba(255, 255, 255, 0.82);
+  --topbar-border: rgba(255, 255, 255, 0.7);
+  --nav-background: rgba(255, 255, 255, 0.95);
+  --nav-border: #e2e8f0;
+  --accent: #1b79f5;
+  --accent-strong: #1962e1;
+  --accent-soft: #eef8ff;
+  --button-secondary-background: #f1f5f9;
+  --button-secondary-text: #0f172a;
+  --button-secondary-hover: #e2e8f0;
+  --button-primary-text: #ffffff;
+  --button-ghost-text: #475569;
+  --button-ghost-hover: #f1f5f9;
+  --hero-surface: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --hero-muted: rgba(255, 255, 255, 0.72);
+  --nav-item-background: transparent;
+  --nav-item-text: #64748b;
+  --nav-item-active-background: #eef8ff;
+  --nav-item-active-text: #1b79f5;
+}
+
+html[data-theme="game"] {
+  color-scheme: dark;
+  --app-background:
+    radial-gradient(circle at top, rgba(163, 70, 255, 0.26), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.18), transparent 28%),
+    linear-gradient(180deg, #1a1c20 0%, #181b22 55%, #111317 100%);
+  --body-background: #131518;
+  --text-main: #f7fbff;
+  --text-muted: #a6adb8;
+  --card-background: linear-gradient(180deg, rgba(46, 49, 55, 0.98) 0%, rgba(33, 35, 40, 0.98) 100%);
+  --card-border: rgba(0, 0, 0, 0.9);
+  --card-shadow:
+    0 4px 0 rgba(0, 0, 0, 0.65),
+    0 18px 38px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --topbar-background:
+    linear-gradient(180deg, rgba(38, 41, 47, 0.98) 0%, rgba(24, 26, 31, 0.98) 100%);
+  --topbar-border: rgba(0, 0, 0, 0.9);
+  --nav-background:
+    linear-gradient(180deg, rgba(39, 42, 47, 0.98) 0%, rgba(12, 13, 16, 0.98) 100%);
+  --nav-border: rgba(0, 0, 0, 0.95);
+  --accent: #f6df00;
+  --accent-strong: #ffe94a;
+  --accent-soft: rgba(246, 223, 0, 0.2);
+  --button-secondary-background: linear-gradient(180deg, #2f3238 0%, #1f2126 100%);
+  --button-secondary-text: #f4f8fb;
+  --button-secondary-hover: linear-gradient(180deg, #3a3f46 0%, #23262b 100%);
+  --button-primary-text: #121316;
+  --button-ghost-text: #d6dce3;
+  --button-ghost-hover: rgba(255, 255, 255, 0.08);
+  --hero-surface: linear-gradient(180deg, rgba(24, 27, 31, 0.98) 0%, rgba(14, 16, 20, 0.98) 100%);
+  --hero-muted: rgba(255, 255, 255, 0.66);
+  --nav-item-background: linear-gradient(180deg, rgba(38, 41, 47, 0.78) 0%, rgba(20, 22, 27, 0.9) 100%);
+  --nav-item-text: #d6dce3;
+  --nav-item-active-background: linear-gradient(180deg, rgba(255, 231, 46, 0.95) 0%, rgba(240, 214, 16, 0.92) 100%);
+  --nav-item-active-text: #121316;
 }
 
 body {
   min-height: 100vh;
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--body-background);
+  color: var(--text-main);
   font-family: "Noto Sans JP", system-ui, sans-serif;
 }
 
@@ -20,4 +87,116 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+html[data-theme="game"] body {
+  position: relative;
+}
+
+html[data-theme="game"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 30%);
+  background-size: 8px 8px, 100% 100%;
+  opacity: 0.3;
+}
+
+html[data-theme="game"] .theme-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+}
+
+html[data-theme="game"] .theme-card::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+}
+
+html[data-theme="game"] .theme-card::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: 0;
+  height: 54px;
+  border-radius: 0 0 18px 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent);
+  pointer-events: none;
+}
+
+html[data-theme="game"] .theme-button {
+  border-radius: 999px;
+  border: 2px solid rgba(0, 0, 0, 0.7);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 3px 0 rgba(0, 0, 0, 0.45);
+}
+
+html[data-theme="game"] .theme-button--primary {
+  color: #121316;
+}
+
+html[data-theme="game"] .theme-button--secondary,
+html[data-theme="game"] .theme-button--ghost {
+  color: #f8fbff;
+}
+
+html[data-theme="game"] .theme-badge {
+  border: 1px solid rgba(0, 0, 0, 0.65);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="game"] .theme-shell-header {
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme="game"] .theme-shell-nav {
+  box-shadow: 0 -4px 0 rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme="game"] .theme-nav-item {
+  border: 2px solid transparent;
+  border-radius: 18px;
+}
+
+html[data-theme="game"] .theme-nav-item[data-active="true"] {
+  border-color: rgba(0, 0, 0, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 3px 0 rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="game"] .text-ink,
+html[data-theme="game"] .text-slate-900,
+html[data-theme="game"] .text-slate-800,
+html[data-theme="game"] .text-slate-700,
+html[data-theme="game"] .text-slate-600,
+html[data-theme="game"] .text-slate-500,
+html[data-theme="game"] .text-slate-400 {
+  color: var(--text-main) !important;
+}
+
+html[data-theme="game"] .bg-white,
+html[data-theme="game"] .bg-slate-50,
+html[data-theme="game"] .bg-slate-100 {
+  background: linear-gradient(180deg, rgba(56, 59, 65, 0.95) 0%, rgba(38, 41, 46, 0.95) 100%) !important;
+}
+
+html[data-theme="game"] .border-slate-200,
+html[data-theme="game"] .border-slate-100 {
+  border-color: rgba(0, 0, 0, 0.72) !important;
+}
+
+html[data-theme="game"] .hover\:bg-slate-50:hover,
+html[data-theme="game"] .hover\:bg-slate-100:hover,
+html[data-theme="game"] .hover\:bg-slate-200:hover {
+  background: linear-gradient(180deg, rgba(68, 71, 77, 0.95) 0%, rgba(44, 47, 53, 0.95) 100%) !important;
 }

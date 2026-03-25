@@ -129,7 +129,7 @@ export function AccountForm({
           placeholder="例: 0"
         />
         <p className="mt-1 text-xs text-slate-400">
-          既存の明細はそのままに、現在の残高に合うよう開始残高を内部で調整します。
+          既存の明細はそのままに、現在の残高へ合うよう開始残高を内部で調整します。
         </p>
         {errors.current_balance ? (
           <p className="mt-1 text-xs text-red-600">{errors.current_balance.message}</p>
@@ -137,8 +137,12 @@ export function AccountForm({
       </div>
 
       <div className="sm:col-span-2 flex flex-col gap-2">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "保存中..." : isEdit ? "更新する" : "口座を追加"}
+        <Button
+          type="submit"
+          isLoading={isSubmitting}
+          loadingText={isEdit ? "更新中..." : "追加中..."}
+        >
+          {isEdit ? "更新する" : "口座を追加"}
         </Button>
         {message ? <p className="text-sm text-slate-500">{message}</p> : null}
       </div>

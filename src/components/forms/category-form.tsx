@@ -141,8 +141,8 @@ export function CategoryForm({
       </div>
 
       <div className="flex flex-wrap gap-2 sm:col-span-2">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "更新中..." : "カテゴリを更新"}
+        <Button type="submit" isLoading={isSubmitting} loadingText="更新中...">
+          カテゴリを更新
         </Button>
         {onCancel ? (
           <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting}>

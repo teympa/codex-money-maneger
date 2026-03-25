@@ -204,8 +204,12 @@ export function TransactionForm({
       </div>
 
       <div className="flex flex-col gap-2 sm:col-span-2">
-        <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "保存中..." : isEdit ? "更新する" : "保存する"}
+        <Button
+          type="submit"
+          isLoading={isSubmitting}
+          loadingText={isEdit ? "更新中..." : "登録中..."}
+        >
+          {isEdit ? "更新する" : "登録する"}
         </Button>
         {message ? <p className="text-sm text-slate-500">{message}</p> : null}
       </div>

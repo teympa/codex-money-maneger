@@ -35,7 +35,15 @@ export default async function AccountsPage() {
                   </div>
                 </div>
                 <div className="mt-3 flex items-center justify-end gap-2">
-                  <Link href={`/accounts/${account.id}/edit`} className="text-sm text-brand-700">
+                  <Link
+                    href={`/accounts/${account.id}/edit`}
+                    className="theme-button theme-button--secondary inline-flex items-center justify-center rounded-2xl border px-4 py-2.5 text-sm font-medium"
+                    style={{
+                      borderColor: "rgba(0, 0, 0, 0.7)",
+                      background: "var(--button-secondary-background)",
+                      color: "var(--button-secondary-text)",
+                    }}
+                  >
                     編集
                   </Link>
                   <DeleteAccountButton id={account.id} name={account.name} />
