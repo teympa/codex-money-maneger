@@ -47,6 +47,14 @@ function isWithinWindow(targetTime: string, currentMinutes: number, windowMinute
   return currentMinutes >= targetMinutes && currentMinutes < targetMinutes + windowMinutes;
 }
 
+function isDueToSendToday(targetTime: string, currentMinutes: number, windowMinutes: number) {
+  if (isWithinWindow(targetTime, currentMinutes, windowMinutes)) {
+    return true;
+  }
+
+  return currentMinutes >= parseMinutes(targetTime);
+}
+
 function normalizeLineError(result: Awaited<ReturnType<typeof sendLineMessage>>) {
   if ("reason" in result && result.reason) {
     return result.reason;
@@ -161,7 +169,7 @@ export async function runDailyReportsForDueUsers(options?: {
   }
 
   const rows = ((settings ?? []) as NotificationRow[]).filter((row) =>
-    force ? true : isWithinWindow(row.daily_report_time, now.totalMinutes, windowMinutes),
+    force ? true : isDueToSendToday(row.daily_report_time, now.totalMinutes, windowMinutes),
   );
 
   const results: Array<{

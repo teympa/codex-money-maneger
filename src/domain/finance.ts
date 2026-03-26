@@ -35,6 +35,44 @@ export function calculateTodaySpendable(remainingBudget: number, referenceDate: 
   return Math.floor(remainingBudget / calculateRemainingDays(referenceDate));
 }
 
+export function splitExpenseAmountsByToday(
+  transactions: Transaction[],
+  monthKey: string,
+  todayKey: string,
+  categoryId?: string | null,
+) {
+  return transactions.reduce(
+    (totals, transaction) => {
+      if (transaction.transaction_kind !== "expense") return totals;
+      if (!isTransactionInMonth(transaction.transaction_date, monthKey)) return totals;
+      if (categoryId !== undefined) {
+        if (categoryId === null) return totals;
+        if (transaction.category_id !== categoryId) return totals;
+      }
+
+      if (transaction.transaction_date < todayKey) {
+        totals.beforeToday += transaction.amount;
+      } else if (transaction.transaction_date === todayKey) {
+        totals.today += transaction.amount;
+      }
+
+      return totals;
+    },
+    { beforeToday: 0, today: 0 },
+  );
+}
+
+export function calculateTodayRemainingSpendable(
+  budgetAmount: number,
+  spentBeforeToday: number,
+  spentToday: number,
+  referenceDate: Date,
+) {
+  const budgetBeforeToday = Math.max(budgetAmount - spentBeforeToday, 0);
+  const todayAllowance = calculateTodaySpendable(budgetBeforeToday, referenceDate);
+  return Math.max(todayAllowance - spentToday, 0);
+}
+
 export function calculateProjectedMonthEnd(monthExpense: number, referenceDate: Date) {
   const started = differenceInCalendarDays(referenceDate, startOfMonth(referenceDate)) + 1;
   const totalDays =
